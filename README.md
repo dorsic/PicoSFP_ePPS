@@ -208,3 +208,18 @@ This project was inspired by **[VKSDR's Open Source Pmod Designs](https://vksdr.
 | [`IMG_8517.MOV`](IMG_8517.MOV) | Project video |
 
 The firmware, connection tables, and editable diagram are intended as a starting point for building and measuring your own link. Start with a short fiber, verify the recovered clock, and calibrate PPS phase before extending the setup.
+
+## License and attribution
+
+Copyright © 2026 Marek Doršic (dorsic). Released under the
+[BSD 3-Clause License](LICENSE).
+
+Redistributions of source code, including modified versions, must retain the
+copyright notice, license conditions, and disclaimer. Binary redistributions
+must reproduce them in the accompanying documentation and/or other materials.
+Third-party code retains its applicable copyright and license notices.
+
+If you build on this work, please also acknowledge **Marek Doršic — PicoSFP ePPS**
+and link to [the original project](https://github.com/dorsic/PicoSFP_ePPS) in your
+README, documentation, or project description. This acknowledgement request is
+additional to, and does not change, the BSD 3-Clause License conditions.
