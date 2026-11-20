@@ -1,0 +1,26 @@
+
+.program picosq
+ 
+; Regenerate a continuous 10 MHz, 50% duty-cycle square wave.
+; At 80 MHz, each loop is four clocks LOW followed by four clocks HIGH.
+; Configuration: SET_BASE / SET_COUNT = clock output / 1.
+; No input pin or FIFO parameters are required.
+;
+; Based on the Raspberry Pi Pico pio_blink example.
+; SPDX-License-Identifier: BSD-3-Clause
+;
+; Version:
+; 27-Jul-2025  Marek Dorsic (.md)
+
+set pindirs 1       ; Set pin to output
+
+start:
+    set pins 0
+    set pins 0
+    set pins 0
+    set pins 0
+    set pins 1
+    set pins 1
+    set pins 1
+    jmp start
+

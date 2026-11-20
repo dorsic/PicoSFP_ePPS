@@ -1,0 +1,46 @@
+
+.program picopulseoffset
+ 
+; Generate a delayed pulse from each accepted rising edge of the raw marker.
+; WAIT PIN 0 samples the GPIO selected by IN_BASE.
+; Configuration: SET_BASE / SET_COUNT = PPS output / 1.
+;
+; Startup FIFO words: delay loop count, HIGH-width loop count, and the
+; number of input pulses to skip (0 or 1). main.c subtracts three clocks
+; from each requested duration to account for instruction overhead.
+; Two state machines handle alternate markers for delays near one second.
+;
+; Version:
+; 12-Sep-2025  Marek Dorsic (.md)
+
+    set pins 0
+    set pindirs 1       ; Set pin to output
+
+    pull block
+    mov y osr       ; input-to-output delay count
+    pull block
+    mov isr osr    ; output pulse width count
+    pull block
+    mov x osr       ; startup: skip 0 or 1 input pulses
+
+startup:
+    jmp !x armed
+    wait 0 pin 0
+    wait 1 pin 0
+    jmp x-- startup
+
+armed:
+.wrap_target
+    wait 0 pin 0
+    wait 1 pin 0   ; capture fresh pulse
+
+    mov x y
+delay_loop:
+    jmp x-- delay_loop
+    set pins 1
+
+    mov x isr
+high_loop:
+    jmp x-- high_loop
+    set pins 0
+.wrap

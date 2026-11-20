@@ -1,0 +1,38 @@
+.program picoenc
+
+; Encode PPS on a continuous 10 MHz carrier using an 80 MHz PIO clock.
+; PPS LOW: repeated 50% duty cycles (4 clocks HIGH, 4 LOW).
+; PPS HIGH: alternating 25% and 75% duty cycles (2/6, then 6/2 clocks).
+; Each encoded pair is balanced: 8 clocks HIGH and 8 LOW over 200 ns.
+; Sample PPS at the start of each normal cycle or complete encoded pair.
+; For repeatable timing, align PPS to the reference-derived system clock.
+;
+; Configuration: JMP_PIN = PPS input; SIDESET_BASE = carrier output.
+;
+; Version:
+; 17-Nov-2026  Marek Dorsic (.md)
+
+.side_set 1
+
+.wrap_target
+cycle:
+    jmp pin encoded_pair side 1 ; Rising edge; sample PPS
+
+; PPS LOW: HIGH 4 cycles, LOW 4 cycles.
+    nop                  side 1 [2]
+    jmp cycle            side 0 [3]
+
+; PPS HIGH: complete a balanced pair of carrier cycles.
+encoded_pair:
+; First cycle: HIGH 2 cycles, LOW 6 cycles.
+; The initial JMP already supplied the first HIGH cycle.
+    nop                  side 1
+    nop                  side 0 [5]
+
+; Second cycle: HIGH 6 cycles, LOW 2 cycles.
+    nop                  side 1 [5]
+    jmp cycle            side 0 [1]
+.wrap
+
+; webmaster@smu.sk
+

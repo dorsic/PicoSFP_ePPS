@@ -1,0 +1,25 @@
+
+.program picoenc
+ 
+; Experimental single-duty encoder; not selected by CMake.
+; At 80 MHz: PPS LOW gives 50% duty; PPS HIGH gives 75% duty.
+; Configuration: JMP_PIN = PPS input; SET_BASE / SET_COUNT = output / 1.
+;
+; Based on the Raspberry Pi Pico pio_blink example.
+; SPDX-License-Identifier: BSD-3-Clause
+;
+; Version:
+; 27-Jul-2025  Marek Dorsic (.md)
+
+set pindirs 1       ; Set pin to output
+
+.wrap_target
+start:              
+    set pins 1   [1]    ; HIGH for two clocks
+    jmp pin high [1]   ; Sample PPS; HIGH for two more clocks
+    set pins 0   [1]    ; PPS LOW: LOW for two clocks
+    jmp start    [1]   ; LOW for two more clocks: 50% duty
+high:
+    nop          [1]   ; PPS HIGH: HIGH for two more clocks (six total)
+    set pins 0   [1]    ; LOW for two clocks: 75% duty
+.wrap

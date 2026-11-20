@@ -1,0 +1,13 @@
+# Local operating-system files
+.DS_Store
+Thumbs.db
+
+# Editor and diagram backup files
+*~
+*.bkp
+*.bak
+
+# Generated build and Python cache directories
+build/
+__pycache__/
+*.pyc

@@ -1,0 +1,47 @@
+.program picodec
+
+; Demodulates a 10 MHz carrier:
+;   50/50 HIGH/LOW = PPS inactive
+;   alternating 25% / 75% duty cycles = PPS active
+; A short HIGH pulse sets the marker; 32 consecutive non-short pulses clear it.
+;
+; Requires an 80 MHz state-machine clock (divider 1).
+;
+; Configuration:
+;   IN_BASE = encoded clock GPIO, used by WAIT PIN 0
+;   JMP_PIN = same encoded clock GPIO
+;   SET_BASE / SET_COUNT = PPS output GPIO / 1
+
+; Version:
+; 17-Nov-2026  Marek Dorsic (.md)
+
+    set pindirs 1
+    set pins 0
+
+.wrap_target
+
+; Output LOW: detect the first short HIGH pulse.
+armed:
+    wait 0 pin 0
+    wait 1 pin 0 [1]
+    jmp pin armed           ; Still HIGH: normal or long pulse
+
+detected:
+    set pins 1              ; Already LOW: short 25/75 cycle
+
+; Any short pulse resets the normal-cycle confirmation count.
+latched:
+    set y 31
+
+check_normal:
+    wait 0 pin 0
+    wait 1 pin 0 [1]
+    jmp pin normal_seen     ; Still HIGH: normal or long pulse
+    jmp latched             ; Short pulse: restart confirmation
+
+normal_seen:
+    jmp y-- check_normal    ; Require 32 consecutive non-short pulses
+
+    set pins 0
+    jmp armed
+.wrap
